@@ -1,3 +1,15 @@
+# Python
+venv/
+__pycache__
+photos/
+
+# Deploy script
+deploy.sh
+build
+
+# Telegram session file
+*.session
+
 # Logs
 logs
 *.log
