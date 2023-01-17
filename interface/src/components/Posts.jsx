@@ -15,7 +15,7 @@ export default function Posts() {
         }
 
         try {
-            const resp = await fetch(`https://mirror.fidesy.xyz/api/posts?skip=${skip}&limit=${limit}&like=${value}`)
+            const resp = await fetch(`http://localhost:8000/api/posts?skip=${skip}&limit=${limit}&like=${value}`)
             const res = await resp.json()
             if (value === "") {
                 setPosts([...posts, ...res])
@@ -79,7 +79,7 @@ export default function Posts() {
                         return (
                             <div key={post.id} className="mt-10 xl:p-10 p-5 bg-white rounded-lg">
                                 <div className="flex items-center" onClick={() => window.open("https://t.me/"+post.username)}>
-                                    <img src={"https://mirror.fidesy.xyz/api/photos/"+post.channel_id} alt="channel photo" width={30}
+                                    <img src={"http://localhost:8000/api/photos/"+post.channel_id} alt="channel photo" width={30}
                                         className="rounded-lg"/>
                                     <div className="mx-3 text-xl font-bold">{post.title}</div>
                                 </div>
