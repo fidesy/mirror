@@ -10,9 +10,6 @@ from utils import load_txt
 load_dotenv()
 
 
-parent_dir = os.path.join(os.path.dirname(__file__), os.pardir)
-
-
 async def join_channels(client: TelegramClient, resources: list[str], delay: int = 5) -> None:
     for resource in resources:
         entity = await client.get_entity(resource)
@@ -22,7 +19,7 @@ async def join_channels(client: TelegramClient, resources: list[str], delay: int
 
 async def main():
     async with TelegramClient(os.getenv("TITLE"), os.getenv("API_ID"), os.getenv("API_HASH")) as client:
-        channels = load_txt(parent_dir + "/data/channels.txt")
+        channels = load_txt("mirror/data/channels.txt")
         await join_channels(client, channels)
 
 

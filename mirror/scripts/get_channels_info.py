@@ -4,13 +4,11 @@ from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.types import Channel
 
 
-parent_dir = os.path.join(os.path.dirname(__file__), os.pardir)
-
 
 async def get_channels_info(client: TelegramClient, usernames: list[str]) -> list[Channel]:
     # create a folder to store photos
-    if not os.path.exists(parent_dir + "/data/photos"):
-        os.makedirs(parent_dir + "/data/photos")
+    if not os.path.exists("mirror/data/photos"):
+        os.makedirs("mirror/data/photos")
 
     channels = []
     for username in usernames:
@@ -25,6 +23,6 @@ async def get_channel_info(client: TelegramClient, channel_username: str):
     full_info = await client(GetFullChannelRequest(entity))
 
     # download profile image
-    await client.download_profile_photo(entity, parent_dir + f"data/photos/{entity.id}.png")
+    await client.download_profile_photo(entity, f"mirror/data/photos/{entity.id}.png")
 
     return (entity.id, entity.username, entity.title, full_info.full_chat.about)
