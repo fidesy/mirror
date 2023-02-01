@@ -12,7 +12,7 @@ from scripts.utils import load_txt
 async def main():
     load_dotenv()
 
-    db = Database(os.getenv("DBURL"))
+    db = Database(os.getenv("PARSER_DBURL"))
 
     channels_txt = load_txt("mirror/data/channels.txt")
 

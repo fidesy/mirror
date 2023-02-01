@@ -2,6 +2,7 @@
 venv/
 __pycache__
 photos/
+.DS_Store
 
 # Deploy script
 deploy.sh
