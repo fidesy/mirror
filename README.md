@@ -22,11 +22,13 @@ git clone https://github.com/fidesy/mirror.git
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+cp requirements.txt mirror
 ```
 
-4. Run the app to listen to new posts. This is needed to create session file for transfer to the docker container
+4. Run the app to init telegram client and copy it to the mirror directory. This is needed to create session file for transfer to the docker container.
 ```
-python mirror/listen_posts.py
+python mirror/init_client.py
+cp *.session mirror
 ```
 
 5. set env variable for the correct installation, build and run docker app containers
@@ -41,7 +43,7 @@ now website is available at localhost:3000
 
 You can manage your appication using the API.
 
-Add channel and parse latest 50 posts.
+Add channel and parse the latest 50 posts.
 ```
 curl -H "X-TOKEN: YOUR_CUSTOM_ENV_TOKEN" -X POST http://localhost:8000/api/channel?username=CHANNEL_USERNAME
 ```

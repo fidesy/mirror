@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS posts(
     message     TEXT,
     media_url   TEXT
 );
- ALTER TABLE ONLY posts ADD CONSTRAINT "channel_post_id" PRIMARY KEY (post_id, channel_id);
 """
 
 CHANNELS_SCHEME = """
