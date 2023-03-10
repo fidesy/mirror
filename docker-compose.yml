@@ -7,23 +7,37 @@ services:
       - .env
     ports:
       - ${PORT}:${PORT}
+    # volumes:
+    #   - /mirror/data/photos:/usr/src/app/mirror/data/photos
     depends_on:
       db:
         condition: service_healthy
+
+  listener:
+    container_name: tg-listener
+    build: ./mirror
+    env_file:
+      - .env
+    ports:
+      - 8888:8888
+    depends_on:
+      db:
+        condition: service_healthy
+        
   db:
     container_name: mirrordb
     image: postgres
     env_file:
       - .env
     ports:
-      - "${DB_PORT}:5432"
+      - "${POSTGRES_PORT}:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-
+    
   frontend:
     container_name: frontend
     build: ./interface
