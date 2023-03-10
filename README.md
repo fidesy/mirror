@@ -17,40 +17,38 @@ git clone https://github.com/fidesy/mirror.git
 
 2. Create .env file with all variables from .env.example. Find api_id and api_hash from your telegram account [(guide)](https://core.telegram.org/api/obtaining_api_id)
 
-3. set env variable for the correct installation, build and run docker app containers
-```
-export DOCKER_DEFAULT_PLATFORM=linux/amd64
-docker compose up -d
-```
-now website is available at localhost:3000
-
-4. activate python environment
+3. activate python environment and install dependencies
 ```
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+cp requirements.txt mirror
 ```
 
-5. Fill in channels.txt (mirror/data/channels.txt) file with your list of telegram channel usernames (each username on a new line) 
+4. Run the app to init telegram client and copy it to the mirror directory. This is needed to create session file for transfer to the docker container.
+```
+python mirror/init_client.py
+cp *.session mirror
+```
 
-6. Run the parser script to initialize database and fill in information about channels and latest posts
+5. set env variable for the correct installation, build and run docker app containers
 ```
-python mirror/parser.py
-```
-
-7. Since you parsed the data about channels, you need to build the web-mirror container again to transfer the profile photos.
-```
-docker rm -f web-mirror
-docker rmi mirror_web
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
 docker compose up -d
-``` 
-
-8. Run the script to join channels to be able to listen to new posts.
-```
-python mirror/script/join_channels.py
 ```
 
-9. Run the app to listen to new posts
+now website is available at localhost:3000
+
+## Usage
+
+You can manage your appication using the API.
+
+Add channel and parse the latest 50 posts.
 ```
-python mirror/listen_posts.py
+curl -H "X-TOKEN: YOUR_CUSTOM_ENV_TOKEN" -X POST http://localhost:8000/api/channel?username=CHANNEL_USERNAME
+```
+
+Delete the channel and all its posts.
+```
+curl -H "X-TOKEN: YOUR_CUSTOM_ENV_TOKEN" -X DELETE http://localhost:8000/api/channel?username=CHANNEL_USERNAME
 ```
