@@ -1,5 +1,5 @@
 # mirror
-aggregator of news and posts from multiple platforms, currently only support telegram, website: https://mirror.fidesy.xyz
+aggregator of news and posts from multiple platforms, currently only support telegram
 
 ## Features
 * [x] Listen to new posts from telegram and save them
@@ -8,6 +8,10 @@ aggregator of news and posts from multiple platforms, currently only support tel
 * [ ] ...
 
 
+## Screenshots
+![](./docs/preview.png)
+
+![](./docs/search.png)
 
 ## Installation
 1. clone the repository
