@@ -1,36 +1,12 @@
 import psycopg2
 
-
-POSTS_SCHEME = """
-CREATE TABLE IF NOT EXISTS posts(
-    id          SERIAL,
-    post_id     INT,
-    channel_id  INT,
-    date        TIMESTAMP,
-    message     TEXT,
-    media_url   TEXT
-);
-"""
-
-CHANNELS_SCHEME = """
-CREATE TABLE IF NOT EXISTS channels(
-    id            INT PRIMARY KEY,
-    username      TEXT UNIQUE,
-    title         TEXT,
-    description   TEXT
-)
-"""
-
+';delete from posts;'
 class Database:
 
     def __init__(self, DBURL: str):
-        print(DBURL)
         self.connection = psycopg2.connect(DBURL)
         self.connection.autocommit = True
         self.cursor = self.connection.cursor()
-
-        self.cursor.execute(POSTS_SCHEME)
-        self.cursor.execute(CHANNELS_SCHEME)
     
     def __del__(self):
         self.cursor.close()
@@ -45,18 +21,18 @@ class Database:
 
     def delete_channel(self, channel_username: str):
         try:
-            self.cursor.execute(f"SELECT id FROM channels WHERE username='{channel_username}'")
+            self.cursor.execute("SELECT id FROM channels WHERE username=%s", (channel_username,))
             channel_id = self.cursor.fetchone()
 
-            self.cursor.execute(f"DELETE FROM channels WHERE username='{channel_username}'")
-            self.cursor.execute(f"DELETE FROM posts WHERE channel_id={channel_id[0]}")
+            self.cursor.execute("DELETE FROM channels WHERE username=%s", (channel_username,))
+            self.cursor.execute("DELETE FROM posts WHERE channel_id=%s", (channel_id[0],))
 
         except Exception as e:
             print(e)
 
     def get_channels(self, skip: int = 0, limit: int = 100):
         try:
-            self.cursor.execute(f"SELECT * FROM channels LIMIT {limit} OFFSET {skip}")
+            self.cursor.execute("SELECT * FROM channels LIMIT %s OFFSET %s", (limit, skip,))
             channels = self.cursor.fetchall()
             return [{"id": c[0], "username": c[1], "title": c[2], "description": c[3]} for c  in channels]
 
@@ -77,12 +53,13 @@ class Database:
     def get_posts(self, skip: int = 0, limit: int = 100, like: str = ""):
         posts = []
         try:
-            self.cursor.execute(f"""
-                SELECT posts.id, channel_id, date, username, title, message, media_url FROM posts 
-                JOIN channels ON posts.channel_id=channels.id
-                WHERE message LIKE '%{like}%'
-                ORDER BY date DESC
-                LIMIT {limit} OFFSET {skip}""")
+            self.cursor.execute("SELECT posts.id, channel_id, date, username, title, message, media_url FROM posts\
+                JOIN channels ON posts.channel_id=channels.id \
+                WHERE message LIKE %s \
+                ORDER BY date DESC \
+                LIMIT %s OFFSET %s",
+                (f"%{like}%", limit, skip,))
+            print(self.cursor.query)
 
             for row in self.cursor.fetchall():
                 posts.append({
