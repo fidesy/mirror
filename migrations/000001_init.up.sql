@@ -10,6 +10,12 @@ CREATE TABLE IF NOT EXISTS posts(
     post_id     INT,
     channel_id  INT,
     date        TIMESTAMP,
-    message     TEXT,
-    media_url   TEXT
+    message     TEXT
+);
+
+CREATE TABLE IF NOT EXISTS media(
+    id SERIAL,
+    channel_id INT,
+    post_id INT,
+    photo_id BIGINT
 );

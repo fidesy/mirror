@@ -1,19 +1,17 @@
 import asyncio
-import os
-from dotenv import load_dotenv
 from telethon import TelegramClient, events
-from telethon.types import PeerChannel
+from telethon.types import PeerChannel, MessageMediaPhoto
 
-from database import Database
+from .config import config
+from .dependencies import get_db
+from .crud import add_post, add_media
+from .schemas import PostCreate, MediaCreate
 
-load_dotenv()
 
-
-client = TelegramClient(os.getenv("TITLE"), os.getenv("API_ID"), os.getenv("API_HASH"))
+client = TelegramClient(config["title"], config["api_id"], config["api_hash"])
 
 mirror = None 
 
-db = Database(os.getenv("DB_URL"))
 
 # New message handler
 @client.on(events.NewMessage)
@@ -24,23 +22,31 @@ async def handler(event):
     if type(event.peer_id) != PeerChannel or not event.post:
         return
 
-    media_url = ""
-    try:
-        media_url = message.media.webpage.url
-    except AttributeError:
-        ...
-
     try:
         await client.forward_messages(mirror, event.message)
     except Exception as e:
         print(e)
 
-    db.add_channel((message.id, message.peer_id.channel_id, message.date, message.message, media_url))
+    db = get_db()
+    add_post(db, PostCreate(
+        post_id=message.id,
+        channel_id=message.peer_id.channel_id,
+        date=message.date,
+        message=message.message,
+    ))
+
+    if message.media and isinstance(message.media, MessageMediaPhoto):
+        add_media(db, MediaCreate(
+            channel_id=message.peer_id.channel_id,
+            post_id=message.id,
+            photo_id=message.media.photo.id
+        ))
 
 
 if __name__ == "__main__":
     client.start()    
+
     loop = asyncio.get_event_loop()
-    mirror = loop.run_until_complete(client.get_entity(os.getenv("CHANNEL_USERNAME")))
+    mirror = loop.run_until_complete(client.get_entity(config["channel_username"]))
 
     client.run_until_disconnected()

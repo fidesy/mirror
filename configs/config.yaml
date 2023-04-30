@@ -1,0 +1,9 @@
+title: main
+api_id: 
+api_hash: 
+
+db_url: postgresql://postgres:postgres@mirrordb?sslmode=disable
+
+x_token: secret_token
+
+channel_username: 

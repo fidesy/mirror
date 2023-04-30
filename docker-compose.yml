@@ -15,7 +15,9 @@ services:
 
   listener:
     container_name: tg-listener
-    build: ./mirror
+    build: 
+      dockerfile: ./mirror/Dockerfile
+      context: ./
     env_file:
       - .env
     ports:

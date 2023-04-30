@@ -78,15 +78,31 @@ export default function Posts() {
                     {posts.map(post => {
                         return (
                             <div key={post.id} className="mt-10 xl:p-10 p-5 bg-white rounded-lg">
-                                <div className="flex items-center" onClick={() => window.open("https://t.me/"+post.username)}>
-                                    <img src={"http://localhost:8000/api/photos/"+post.channel_id} alt="channel photo" width={30}
-                                        className="rounded-lg"/>
+                                <div className="flex items-center" onClick={() => window.open("https://t.me/"+post.channel.username)}>
+                                    <img 
+                                        src={"http://localhost:8000/api/photos/"+post.channel_id} 
+                                        width={30}
+                                        alt="profile" 
+                                        className="rounded-lg"
+                                    />
                                     <div className="mx-3 text-xl font-bold">{post.title}</div>
                                 </div>
-                                <div className="text-slate-700/50">{post.date.replace("T", " ")}</div>
+                                <div className="mt-2 text-slate-700/50">{new Date(post.date).toLocaleString()}</div>
                                 <div className="mt-5" dangerouslySetInnerHTML={
                                     {__html: post.message.replace(/(?:\r\n|\r|\n)/g, "<br/>")}}
                                     >
+                                </div>
+                                <div>
+                                    {post.media.map(media => {
+                                        return (
+                                            <div className='mt-5'>
+                                                {<img
+                                                    src={"http://localhost:8000/api/media/"+media.photo_id}
+                                                    alt="media"
+                                                />}
+                                            </div>
+                                        )
+                                    })}
                                 </div>
 
                             </div>

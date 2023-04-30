@@ -19,26 +19,29 @@ aggregator of news and posts from multiple platforms, currently only support tel
 git clone https://github.com/fidesy/mirror.git
 ```
 
-2. Create .env file with all variables from .env.example. Find api_id and api_hash from your telegram account [(guide)](https://core.telegram.org/api/obtaining_api_id)
+2. Rename .env.example to .env. Fill in [configs/config.yaml](./configs/config.yaml) file with your variables. Find api_id and api_hash from your telegram account [(guide)](https://core.telegram.org/api/obtaining_api_id). Channel username is the channel that posts will be forwarded to.
 
 3. activate python environment and install dependencies
 ```
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-cp requirements.txt mirror
 ```
 
-4. Run the app to init telegram client and copy it to the mirror directory. This is needed to create session file for transfer to the docker container.
+4. Run the app to init telegram client. This is needed to create session file for transfer to the docker container.
 ```
-python mirror/init_client.py
-cp *.session mirror
+python -m mirror.init_client
 ```
 
 5. set env variable for the correct installation, build and run docker app containers
 ```
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 docker compose up -d
+```
+
+6. Initialize database tables
+```
+make migrate-up
 ```
 
 now website is available at localhost:3000

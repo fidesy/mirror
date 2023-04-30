@@ -1,13 +1,10 @@
-import os
-from dotenv import load_dotenv
 from telethon import TelegramClient
 
-
-load_dotenv()
+from .config import config
 
 
 def main():
-    client = TelegramClient(os.getenv("TITLE"), os.getenv("API_ID"), os.getenv("API_HASH"))
+    client = TelegramClient(config["title"], config["api_id"], config["api_hash"])
     client.start()    
 
 

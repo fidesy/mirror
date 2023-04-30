@@ -1,16 +1,18 @@
 
-build:
-	docker build -t web-mirror .
-
 run:
-	docker run --name web-mirror -dp 8000:8000 web-mirror
+	python -m uvicorn mirror.main:app --reload
 
 rundb:
-	docker run --name mirrordb -e POSTGRES_USER=devusermc -e POSTGRES_PASSWORD=po2O4NJH2hjoiqER -e POSTGRES_DB=posts -dp 19812:5432 postgres
+	docker run --name tgdb -e POSTGRES_PASSWORD=postgres -dp 5432:5432 postgres
 
-remove:
-	docker rm -f web-mirror
-	docker rmi web-mirror
+connect:
+	docker exec -it tgdb bash -c 'psql -U postgres'
+	
+migrate-up: 
+	migrate -source file:migrations -database 'postgres://postgres:postgres@localhost?sslmode=disable' -verbose up
 
-restart: remove build run
+migrate-down: 
+	migrate -source file:migrations -database 'postgres://postgres:postgres@localhost?sslmode=disable' -verbose down
 
+add:
+	curl -X POST -H "X-TOKEN: secret_token" http://localhost:8000/api/channel?username=some_username
