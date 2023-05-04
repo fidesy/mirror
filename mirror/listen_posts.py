@@ -36,7 +36,7 @@ async def handler(event):
 
 def add_post(post: PostCreate):
     body = post.json()
-    resp = requests.post("https://mirror.fidesy.xyz/api/post/", data=body, headers={
+    resp = requests.post("http://localhost:8000/api/post/", data=body, headers={
         "Content-Type": "application/json",
         "X-Token": config["x_token"],
     })
