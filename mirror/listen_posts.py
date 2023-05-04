@@ -1,12 +1,11 @@
 import asyncio
 from telethon import TelegramClient, events
-from telethon.types import PeerChannel, MessageMediaPhoto
+from telethon.tl.types import PeerChannel
+import requests
 
 from .config import config
-from .dependencies import get_db
-from .crud import add_post, add_media
-from .schemas import PostCreate, MediaCreate
-
+from .schemas import PostCreate
+from .client import client
 
 client = TelegramClient(config["title"], config["api_id"], config["api_hash"])
 
@@ -27,20 +26,22 @@ async def handler(event):
     except Exception as e:
         print(e)
 
-    db = get_db()
-    add_post(db, PostCreate(
+    add_post(PostCreate(
         post_id=message.id,
         channel_id=message.peer_id.channel_id,
         date=message.date,
         message=message.message,
     ))
 
-    if message.media and isinstance(message.media, MessageMediaPhoto):
-        add_media(db, MediaCreate(
-            channel_id=message.peer_id.channel_id,
-            post_id=message.id,
-            photo_id=message.media.photo.id
-        ))
+
+def add_post(post: PostCreate):
+    body = post.json()
+    resp = requests.post("https://mirror.fidesy.xyz/api/post/", data=body, headers={
+        "Content-Type": "application/json",
+        "X-Token": config["x_token"],
+    })
+
+    print(resp.status_code, resp.text)
 
 
 if __name__ == "__main__":

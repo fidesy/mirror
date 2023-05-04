@@ -24,27 +24,13 @@ async def add_channel(db: Session, channel_username: str) -> None:
         raw_posts = await __get_posts(client, entity, (date.today()+timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S"))
         posts, media = await parse_posts(client, raw_posts[::-1])
 
-    crud.add_channel(db, ChannelCreate(
-        id=channel_info["id"],
-        username=channel_info["username"],
-        title=channel_info["title"],
-        description=channel_info["description"],
-    ))
+    crud.add_channel(db, ChannelCreate(**channel_info))
 
     for post in posts:
-        crud.add_post(db, PostCreate(
-            post_id=post["id"],
-            channel_id=post["channel_id"],
-            date=post["date"],
-            message=post["message"]
-        ))
+        crud.add_post(db, PostCreate(**post))
 
     for m in media:
-        crud.add_media(db, MediaCreate(
-            channel_id=m["channel_id"],
-            post_id=m["post_id"],
-            photo_id=m["photo_id"],
-        ))
+        crud.add_media(db, MediaCreate(**m))
 
 
 async def __join_channel(client: TelegramClient, entity: Channel) -> None:
@@ -102,7 +88,7 @@ async def parse_posts(client: TelegramClient, raw_posts: list[dict]):
 
         if message: 
             posts.append({
-                "id": post.id,
+                "post_id": post.id,
                 "channel_id": channel_id,
                 "date": post.date,
                 "message": message,
